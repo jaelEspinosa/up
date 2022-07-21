@@ -33,11 +33,13 @@
 
   .resultado{
     position:absolute;
+    border: 2px solid #027FC0;
     left:22px;
     height: 100px;
-    background-color: #f3f4f6f1;
+    background-color: #c5c6c7f1;
     animation-name: mostrar;
     animation-duration: 0.5s;
+
     
   }
 
@@ -46,11 +48,11 @@
         height: 0px;
     }
     50% {
-      background-color:#f3f4f67e;
+      background-color:#c5c6c76c;
       height: 100px;
     }
     100% {
-      background-color: #f3f4f6f1;
+      background-color: #c5c6c7f1;
       height: 100PX;
     }
   

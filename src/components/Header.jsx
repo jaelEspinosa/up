@@ -1,19 +1,22 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
+import useAuth from "../hooks/useAuth"
 import useProyectos from "../hooks/useProyectos"
 import '../styles/input.css'
 
 const Header = () => {
-    const navigate = useNavigate()
-    const { setProyectos, proyectos } = useProyectos()
+    
+    const {proyectos,cerrarSesionProyectos } = useProyectos()
+    const {cerrarSesionAuth}=useAuth()
     const [busqueda, setBusqueda] = useState('')
     console.log('estos son los proyectos que hay', proyectos)
     const proyectosFiltrados = proyectos.filter(proyecto => proyecto.nombre.toLowerCase().includes(busqueda.toLowerCase()))
 
     const logOut = () => {
-        localStorage.clear()
-
-        navigate('/')
+        localStorage.removeItem('token')
+        cerrarSesionProyectos()
+        cerrarSesionAuth()
+        
     }
     return (
         <header className="px-4 py-5 bg-white border-b relative">
@@ -38,8 +41,8 @@ const Header = () => {
                     />
                    </div>
                     {busqueda && (
-                      <div className="border-3 relative bg-red-400 w-full">
-                        <div className="resultado w-11/12 md:w-96 rounded-md px-10 overflow-y-scroll scrollbar-thumb-transparent scrollbar-thin hover:scrollbar-thumb-sky-700 scrollbar-thumb-rounded-full shadow border">
+                      <div className="relative w-full">
+                        <div className="resultado w-11/12 md:w-96 rounded-xl px-10 overflow-y-scroll scrollbar-thumb-transparent scrollbar-thin  scrollbar-thumb-rounded-full shadow-md">
                             {proyectosFiltrados.map(proyect => (
                                 <p 
                                 key={proyect._id}

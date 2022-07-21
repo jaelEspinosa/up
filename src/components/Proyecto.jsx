@@ -10,9 +10,13 @@ import ModalEliminarTarea from './ModalEliminarTarea'
 import ModalFormularioTarea from './ModalFormulariotarea'
 import Spinner from './Spinner'
 import Tarea from './Tarea'
+import io from 'socket.io-client'
+
+let socket;
 
 const Proyecto = () => {
-    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta } = useProyectos()
+    const { obtenerProyecto, proyecto, cargando, handleModalTarea, alerta, 
+            SubmitTareasProyecto,eliminarTareaProyecto, actualizarTareaProyecto,cambiarEstadoTarea} = useProyectos()
     const params = useParams()
     
     const admin = useAdmin()
@@ -23,7 +27,41 @@ const Proyecto = () => {
     }, [])
     const { nombre } = proyecto
     
-    
+    useEffect(() => {
+        socket = io(import.meta.env.VITE_BACKEND_URL)
+        socket.emit('abrir proyecto', params.id)
+      },[])
+  
+      useEffect(()=>{
+          socket.on('tarea agregada', tareaNueva =>{
+  
+              if (tareaNueva.proyecto === proyecto._id){
+                  SubmitTareasProyecto(tareaNueva)
+  
+              }
+          });
+          socket.on('tarea eliminada', tareaEliminada =>{
+
+            if (tareaEliminada.proyecto === proyecto._id){
+                eliminarTareaProyecto(tareaEliminada)
+
+            }
+        });
+        socket.on('tarea actualizada', tareaActualizada =>{
+
+            if (tareaActualizada.proyecto._id === proyecto._id){
+                actualizarTareaProyecto(tareaActualizada)
+
+            }
+        });
+        socket.on('nuevo estado', nuevoEstadoTarea =>{
+
+            if (nuevoEstadoTarea.proyecto._id === proyecto._id){
+                cambiarEstadoTarea(nuevoEstadoTarea)
+
+            }
+        });
+      })
     return (
         
             <>
@@ -53,6 +91,7 @@ const Proyecto = () => {
                             </svg>
                             Nueva Tarea
                         </button>}
+                        {alerta?.msg && <Alerta alerta={alerta} />} 
                     
                         <p className='font-bold text-xl mt-10 text-gray-800'>Tareas del Proyecto: {proyecto.tareas?.length}</p>
                         <div className='bg-white shadow mt-10 rounded-lg  overflow-y-scroll scrollbar-thumb-transparent scrollbar-thin
